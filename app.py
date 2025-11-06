@@ -8,12 +8,10 @@ from datetime import datetime, timezone
 from ollama import Client
 from streamlit_extras.stylable_container import stylable_container
 
-# ===== Basic Config =====
 st.set_page_config(page_title="Mini-travel Application", page_icon="💬")
 MODEL = "gpt-oss:20b"
 client = Client(host="https://jzloi-34-187-146-27.a.free.pinggy.link")
 
-# ===== Firebase Setup =====
 @st.cache_resource
 def get_firebase_clients():
     firebase_cfg = st.secrets["firebase_client"]
@@ -28,7 +26,6 @@ def get_firebase_clients():
 
 auth, db = get_firebase_clients()
 
-# ===== Firestore Helpers =====
 def save_message(uid: str, role: str, content: str):
     doc = {"role": role, "content": content, "ts": datetime.now(timezone.utc)}
     db.collection("chats").document(uid).collection("messages").add(doc)
@@ -59,12 +56,10 @@ def load_trips(uid: str):
     docs = list(q.stream())
     return [d.to_dict() for d in docs]
 
-# ===== LLM Function =====
 def ollama_stream(history_messages: list[dict]):
     response = client.chat(model=MODEL, messages=history_messages)
     return response["message"]["content"]
 
-# ===== Auth Forms =====
 def login_form():
     st.markdown("<h3 style='text-align:center;'>Login</h3>", unsafe_allow_html=True)
     with st.form("login_form"):
@@ -155,7 +150,6 @@ def chat_dialog():
         st.session_state.chat_open = True
         st.rerun()
 
-# ===== Main UI =====
 st.markdown("<h1 style='text-align:center;'>Mika Travel Assistant</h1>", unsafe_allow_html=True)
 st.divider()
 
